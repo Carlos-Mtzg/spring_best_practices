@@ -1,6 +1,7 @@
 package gregdev.spring_enterprises.controller;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -63,6 +64,27 @@ public class EnterpriseController {
         }
     }
 
+    // GetByUUID
+    @GetMapping("enterprise/uuid/{uuid}")
+    public ResponseEntity<Object> getByUuid(@PathVariable("uuid") String uuidStr) {
+        try {
+            UUID uuid = parseUuid(uuidStr);
+            EnterpriseModel enterprise = this.enterpriseService.findByUuid(uuid);
+            if (enterprise != null) {
+                return ResponseEntity.ok(enterprise);
+            } else {
+                return Utilities.generateResponse(HttpStatus.NOT_FOUND, RECORD_NOT_FOUND, NOTFOUND_CODE);
+            }
+        } catch (IllegalArgumentException e) {
+            return Utilities.generateResponse(HttpStatus.BAD_REQUEST, "Invalid UUID format", BADREQUEST_CODE);
+        } catch (EntityNotFoundException e) {
+            return Utilities.generateResponse(HttpStatus.NOT_FOUND, RECORD_NOT_FOUND, NOTFOUND_CODE);
+        } catch (Exception e) {
+            return Utilities.generateResponse(HttpStatus.BAD_GATEWAY, INTERNAL_SERVER_ERROR,
+                    INTERNAL_SERVER_ERROR_CODE);
+        }
+    }
+
     // Create
     @PostMapping("/enterprise")
     public ResponseEntity<Object> createEnterprise(@RequestBody EnterpriseModel request) {
@@ -103,4 +125,8 @@ public class EnterpriseController {
         }
     }
 
+    // Método para validar el UUID
+    private UUID parseUuid(String uuidStr) {
+        return UUID.fromString(uuidStr);
+    }
 }

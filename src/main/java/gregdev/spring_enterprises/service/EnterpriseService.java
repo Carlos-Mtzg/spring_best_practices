@@ -2,6 +2,7 @@ package gregdev.spring_enterprises.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Sort;
@@ -27,6 +28,14 @@ public class EnterpriseService {
 
     public EnterpriseModel findById(Integer id) {
         Optional<EnterpriseModel> optional = repository.findById(id);
+        if (optional.isPresent()) {
+            return optional.get();
+        }
+        return null;
+    }
+
+    public EnterpriseModel findByUuid(UUID uuid) {
+        Optional<EnterpriseModel> optional = repository.findByUuid(uuid);
         if (optional.isPresent()) {
             return optional.get();
         }
